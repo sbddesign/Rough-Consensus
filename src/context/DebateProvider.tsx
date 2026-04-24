@@ -128,12 +128,16 @@ export const DebateProvider: React.FC<{
     fetch();
 
     const unsubscribe = subscribeToDebate(debateId, (debateData) => {
-      setDebate(debateData);
+      setDebate({
+        ...debate,
+        ...debateData
+      })
+    ;
       setLoading(false);
     });
 
     return () => unsubscribe();
-  }, [debateId]);
+  }, [debateId, debate]);
 
   // Subscribe to vote counts (aggregated on server)
   useEffect(() => {
