@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { supabase, checkIsAdmin } from "../services/supabase";
-import { SessionUser, User } from "../types";
+import type { OAuthProvider, SessionUser, User } from "../types";
 
 interface AuthContextType {
   currentUser: User | null;
   loading: boolean;
-  signIn: () => Promise<void>;
+  signIn: (provider?: OAuthProvider) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -26,10 +26,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const setUserWithAdminCheck = async (sessionUser: SessionUser) => {
     const isAdmin = await checkIsAdmin(sessionUser.id);
+    const displayName =
+      sessionUser.user_metadata.full_name ||
+      sessionUser.user_metadata.name ||
+      sessionUser.email ||
+      "Anonymous";
 
     setCurrentUser({
       id: sessionUser.id,
-      displayName: sessionUser.user_metadata.full_name || "Anonymous",
+      displayName,
       isAdmin,
     });
   };
@@ -60,10 +65,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, []);
 
-  const signIn = async () => {
+  const signIn = async (provider: OAuthProvider = "github") => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: "github",
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
       });
       if (error) throw error;
     } catch (error) {

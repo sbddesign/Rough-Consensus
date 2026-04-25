@@ -12,4 +12,8 @@ export default defineConfig({
       "roughconsensus.xyz",
     ],
   },
+  test: {
+    environment: "jsdom",
+    setupFiles: "./src/test/setup.ts",
+  },
 });
