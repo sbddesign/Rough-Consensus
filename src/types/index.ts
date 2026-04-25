@@ -2,6 +2,7 @@ import { Session } from "@supabase/supabase-js";
 import { CompositeTypes, Enums, Tables } from "./database.types";
 
 export type VoteOption = "for" | "against" | "undecided";
+export type OAuthProvider = "github" | "google";
 
 type CamelCase<S extends string> =
   S extends `${infer P1}_${infer P2}${infer P3}`
