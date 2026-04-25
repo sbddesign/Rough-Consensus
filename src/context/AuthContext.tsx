@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { supabase, checkIsAdmin } from "../services/supabase";
-import { OAuthProvider, SessionUser, User } from "../types";
+import type { OAuthProvider, SessionUser, User } from "../types";
 
 interface AuthContextType {
   currentUser: User | null;
@@ -12,7 +12,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({
   currentUser: null,
   loading: true,
-  signIn: async (_provider = "github") => {},
+  signIn: async () => {},
   signOut: async () => {},
 });
 
