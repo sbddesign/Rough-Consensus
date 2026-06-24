@@ -6,7 +6,7 @@ import { supabase } from "../services/supabase";
 import AdminPhaseController from "../components/admin/AdminPhaseController";
 import Header from "../components/layout/Header";
 import Button from "../components/ui/Button";
-import { Trash2 } from "lucide-react";
+import { Trash2, Link as LinkIcon, Check } from "lucide-react";
 import {
   coerceDebateFromDb,
   coerceDebateListFromDb,
@@ -20,6 +20,7 @@ const AdminPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedDebate, setSelectedDebate] = useState<Debate | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [copiedDebateId, setCopiedDebateId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -91,6 +92,17 @@ const AdminPage: React.FC = () => {
       setShowForm(false);
     } catch (error) {
       console.error("Error creating debate:", error);
+    }
+  };
+
+  const handleCopyInviteLink = async (debateId: string) => {
+    const inviteLink = `${window.location.origin}/?id=${debateId}`;
+    try {
+      await navigator.clipboard.writeText(inviteLink);
+      setCopiedDebateId(debateId);
+      setTimeout(() => setCopiedDebateId(null), 2000);
+    } catch (error) {
+      console.error("Error copying invite link:", error);
     }
   };
 
@@ -238,6 +250,24 @@ const AdminPage: React.FC = () => {
                     currentPhase={debate.currentPhase}
                     onUpdatePhase={handleUpdatePhase}
                   />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleCopyInviteLink(debate.id)}
+                    icon={
+                      copiedDebateId === debate.id ? (
+                        <Check className="h-4 w-4 text-green-600" />
+                      ) : (
+                        <LinkIcon className="h-4 w-4" />
+                      )
+                    }
+                    className="w-full gap-2"
+                    aria-label="Copy participant invite link"
+                  >
+                    {copiedDebateId === debate.id
+                      ? "Copied!"
+                      : "Copy invite link"}
+                  </Button>
                 </div>
               </div>
             ))}
